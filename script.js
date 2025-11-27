@@ -14,6 +14,8 @@ const PINCH_MAX_DISTANCE = 0.2;
 const INTERACTION_DECAY_RATE = 0.02;
 const ANIMATION_SMOOTHING_FACTOR = 0.05;
 const RANDOM_OFFSET_STRENGTH = 0.5;
+const HAND_ROTATION_LERP_FACTOR = 0.1;
+const ROTATION_RESET_FACTOR = 0.02;
 
 // Hand tracking variables
 let handLandmarks = null;
@@ -320,10 +322,12 @@ function generateChristmasTreePositions(positions) {
     // Generate star on top (5-pointed star shape)
     const starY = treeHeight / 2 * 0.9 + 0.2;
     const starRadius = 0.25;
+    const starPoints = 5;
     for (let i = 0; i < starParticles && index < PARTICLE_COUNT; i++) {
         const angle = (i / starParticles) * Math.PI * 2;
-        // Alternate between inner and outer radius for star points
-        const isPoint = i % 2 === 0;
+        // Alternate between inner and outer radius for star points (5 outer, 5 inner)
+        const pointIndex = Math.floor((i / starParticles) * starPoints * 2) % 2;
+        const isPoint = pointIndex === 0;
         const r = isPoint ? starRadius : starRadius * 0.4;
         const randomR = r * (0.5 + Math.random() * 0.5);
         
@@ -507,13 +511,13 @@ function animate() {
         // Hand detected - apply hand rotation angle to particle system
         // Smoothly interpolate to the target rotation for smoother transitions
         const targetRotationZ = handRotationAngle;
-        particleSystem.rotation.z += (targetRotationZ - particleSystem.rotation.z) * 0.1;
+        particleSystem.rotation.z += (targetRotationZ - particleSystem.rotation.z) * HAND_ROTATION_LERP_FACTOR;
         // Slow down automatic Y rotation when hand is controlling
         particleSystem.rotation.y += 0.0005;
     } else {
         // No hand detected - revert to idle animation (auto rotation)
         // Gradually return Z rotation to 0
-        particleSystem.rotation.z += (0 - particleSystem.rotation.z) * 0.02;
+        particleSystem.rotation.z += (0 - particleSystem.rotation.z) * ROTATION_RESET_FACTOR;
         // Normal auto-rotation on Y axis
         particleSystem.rotation.y += 0.002;
     }
