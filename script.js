@@ -24,6 +24,8 @@ let targetRotationZ = 0;
 let currentRotationZ = 0;
 let handDetected = false;
 const ROTATION_SMOOTHING_FACTOR = 0.08;
+const ROTATION_DECAY_FACTOR = 0.98;
+const HAND_ROTATION_OFFSET = Math.PI / 2; // Makes vertical hand (fingers up) the neutral position
 
 // GUI parameters
 const params = {
@@ -326,9 +328,9 @@ function generatePlanetPositions(positions) {
     
     // Generate central sphere (planet body)
     for (let i = 0; i < sphereParticles && index < PARTICLE_COUNT; i++) {
-        // Use golden ratio spiral for even distribution
+        // Use golden ratio spiral for even distribution (avoids clustering at poles)
         const phi = Math.acos(1 - 2 * (i + 0.5) / sphereParticles);
-        const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
+        const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5); // Golden ratio: (1 + sqrt(5))
         
         const x = sphereRadius * Math.sin(phi) * Math.cos(theta);
         const y = sphereRadius * Math.sin(phi) * Math.sin(theta);
@@ -443,8 +445,7 @@ function onHandResults(results) {
         const handDy = middleMCP.y - wrist.y;
         
         // Calculate angle (atan2 gives angle in radians)
-        // Subtract PI/2 to make vertical hand (fingers up) the neutral position
-        targetRotationZ = Math.atan2(handDy, handDx) + Math.PI / 2;
+        targetRotationZ = Math.atan2(handDy, handDx) + HAND_ROTATION_OFFSET;
     } else {
         handLandmarks = null;
         handDetected = false;
@@ -504,7 +505,7 @@ function animate() {
         // Auto-rotate when no hand is detected
         particleSystem.rotation.y += 0.002;
         // Gradually return Z rotation to neutral
-        currentRotationZ *= 0.98;
+        currentRotationZ *= ROTATION_DECAY_FACTOR;
         particleSystem.rotation.z = currentRotationZ;
     }
     
