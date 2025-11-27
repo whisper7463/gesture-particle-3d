@@ -22,7 +22,7 @@ let interactionFactor = 1.0; // 0 = pinched (tight), 1 = open (scattered)
 // GUI parameters
 const params = {
     particleColor: '#00ffff',
-    shape: 'Sphere',
+    shape: 'Heart',
     particleSize: 3,
     dispersionStrength: 5
 };
@@ -72,8 +72,8 @@ function initParticles() {
     targetPositions = new Float32Array(PARTICLE_COUNT * 3);
     velocities = new Float32Array(PARTICLE_COUNT * 3);
     
-    // Generate initial sphere shape
-    generateSpherePositions(targetPositions);
+    // Generate initial heart shape
+    generateHeartPositions(targetPositions);
     
     // Copy target to current positions initially
     for (let i = 0; i < currentPositions.length; i++) {
@@ -167,12 +167,62 @@ function generateCubePositions(positions) {
     }
 }
 
+// Generate heart positions using rejection sampling
+function generateHeartPositions(positions) {
+    const scale = 1.5;
+    let index = 0;
+    let iterations = 0;
+    const maxIterations = PARTICLE_COUNT * 100; // Safety limit
+    
+    // Use rejection sampling within a bounding box
+    // Heart equation: (x^2 + 9/4 * y^2 + z^2 - 1)^3 - x^2 * z^3 - 9/80 * y^2 * z^3 < 0
+    while (index < PARTICLE_COUNT && iterations < maxIterations) {
+        iterations++;
+        
+        // Sample random point in bounding box
+        const x = (Math.random() * 3 - 1.5); // [-1.5, 1.5]
+        const z = (Math.random() * 3 - 1.5); // [-1.5, 1.5]
+        const y = (Math.random() * 3 - 1);   // [-1, 2]
+        
+        // Check if point is inside the heart
+        const x2 = x * x;
+        const y2 = y * y;
+        const z2 = z * z;
+        
+        const term1 = x2 + (9 / 4) * y2 + z2 - 1;
+        const term1Cubed = term1 * term1 * term1;
+        const z3 = z2 * z;
+        const heartValue = term1Cubed - x2 * z3 - (9 / 80) * y2 * z3;
+        
+        if (heartValue < 0) {
+            // Point is inside the heart - use it
+            positions[index * 3] = x * scale;
+            positions[index * 3 + 1] = z * scale; // Map z to Y (up)
+            positions[index * 3 + 2] = y * scale; // Map y to Z (depth)
+            index++;
+        }
+    }
+    
+    // Fill remaining positions with random points inside heart bounds if limit reached
+    while (index < PARTICLE_COUNT) {
+        const x = (Math.random() - 0.5) * 2 * scale;
+        const y = Math.random() * 2 * scale;
+        const z = (Math.random() - 0.5) * 2 * scale;
+        positions[index * 3] = x;
+        positions[index * 3 + 1] = y;
+        positions[index * 3 + 2] = z;
+        index++;
+    }
+}
+
 // Switch shape
 function switchShape(shape) {
     if (shape === 'Sphere') {
         generateSpherePositions(targetPositions);
     } else if (shape === 'Cube') {
         generateCubePositions(targetPositions);
+    } else if (shape === 'Heart') {
+        generateHeartPositions(targetPositions);
     }
 }
 
@@ -256,7 +306,7 @@ function initGUI() {
         });
     
     // Shape switching
-    gui.add(params, 'shape', ['Sphere', 'Cube'])
+    gui.add(params, 'shape', ['Sphere', 'Cube', 'Heart'])
         .name('Shape')
         .onChange((value) => {
             switchShape(value);
