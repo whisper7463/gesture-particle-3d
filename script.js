@@ -183,28 +183,47 @@ function changeShape(newShape) {
 // ==================== MediaPipe Setup ====================
 function setupMediaPipe() {
     videoElement = document.getElementById('webcam');
-    
-    // Initialize MediaPipe Hands
-    hands = new Hands({
-        locateFile: (file) => {
-            return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${file}`;
-        }
-    });
-    
-    hands.setOptions({
-        maxNumHands: 1,
-        modelComplexity: 1,
-        minDetectionConfidence: 0.7,
-        minTrackingConfidence: 0.5
-    });
-    
-    hands.onResults(onHandResults);
-    
-    // Setup camera
-    setupCamera();
+
+    // Check if MediaPipe Hands is available
+    if (typeof Hands === 'undefined') {
+        console.error('MediaPipe Hands library not loaded');
+        updateStatus('Error: MediaPipe not available');
+        return;
+    }
+
+    try {
+        // Initialize MediaPipe Hands
+        hands = new Hands({
+            locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${file}`;
+            }
+        });
+
+        hands.setOptions({
+            maxNumHands: 1,
+            modelComplexity: 1,
+            minDetectionConfidence: 0.7,
+            minTrackingConfidence: 0.5
+        });
+
+        hands.onResults(onHandResults);
+
+        // Setup camera
+        setupCamera();
+    } catch (error) {
+        console.error('MediaPipe initialization error:', error);
+        updateStatus('Error: Failed to initialize hand tracking');
+    }
 }
 
 function setupCamera() {
+    // Check if Camera utility is available
+    if (typeof Camera === 'undefined') {
+        console.error('MediaPipe Camera utility not loaded');
+        updateStatus('Error: Camera utility not available');
+        return;
+    }
+
     const cameraUtils = new Camera(videoElement, {
         onFrame: async () => {
             await hands.send({ image: videoElement });
@@ -212,14 +231,23 @@ function setupCamera() {
         width: 640,
         height: 480
     });
-    
+
     cameraUtils.start()
         .then(() => {
             updateStatus('Hand tracking active');
         })
         .catch((error) => {
             console.error('Camera error:', error);
-            updateStatus('Camera access denied');
+            // Provide more specific error messages
+            if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                updateStatus('Camera permission denied - please allow access');
+            } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+                updateStatus('No camera found - please connect a webcam');
+            } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+                updateStatus('Camera in use by another application');
+            } else {
+                updateStatus('Camera error: ' + error.message);
+            }
         });
 }
 
