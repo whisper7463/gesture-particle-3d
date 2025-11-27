@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesture-Controlled 3D Particle System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Container for the 3D canvas -->
+    <div id="canvas-container"></div>
+    
+    <!-- Hidden video element for webcam -->
+    <video id="webcam" autoplay playsinline></video>
+    
+    <!-- Import Three.js (ES modules via CDN) -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+            "lil-gui": "https://unpkg.com/lil-gui@0.19.2/dist/lil-gui.esm.js"
+        }
+    }
+    </script>
+    
+    <!-- Import MediaPipe Hands and Camera Utils (via CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js" crossorigin="anonymous"></script>
+    
+    <!-- Main script -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
