@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Particle System - Hand Gesture Control</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Video element for webcam feed (hidden, used by MediaPipe) -->
+    <video id="webcam" autoplay playsinline></video>
+    
+    <!-- Container for Three.js canvas -->
+    <div id="canvas-container"></div>
+
+    <!-- CDN Scripts -->
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.min.js" crossorigin="anonymous"></script>
+    
+    <!-- MediaPipe Camera Utils -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1640029074/camera_utils.min.js" crossorigin="anonymous"></script>
+    
+    <!-- MediaPipe Drawing Utils -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1620248257/drawing_utils.min.js" crossorigin="anonymous"></script>
+    
+    <!-- lil-gui for UI controls -->
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.19/dist/lil-gui.umd.min.js"></script>
+    
+    <!-- Main application script -->
+    <script src="script.js"></script>
+</body>
+</html>
