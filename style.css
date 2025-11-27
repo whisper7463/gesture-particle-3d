@@ -1,0 +1,55 @@
+/* Reset default margins and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body and HTML should take full viewport */
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+}
+
+/* Canvas container takes full viewport */
+#canvas-container {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+/* Canvas element styling */
+#canvas-container canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Webcam video preview - positioned bottom-right, mirrored */
+.input_video {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: auto;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transform: scaleX(-1);
+    z-index: 100;
+    background-color: #000;
+}
+
+/* Ensure lil-gui is visible */
+.lil-gui {
+    z-index: 1000 !important;
+}
+
+.lil-gui.root {
+    position: fixed !important;
+    top: 10px !important;
+    right: 10px !important;
+}
