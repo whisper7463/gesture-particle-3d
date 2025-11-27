@@ -8,6 +8,12 @@ const PARTICLE_COUNT = 5000;
 const PARTICLE_SIZE = 0.02;
 const INTERPOLATION_SPEED = 0.05;
 const SCATTER_INTENSITY = 2.0;
+const NOISE_MULTIPLIER = 0.1;
+const EXPLOSION_MULTIPLIER = 0.05;
+
+// Gesture detection thresholds
+const MIN_PINCH_DISTANCE = 0.05;
+const MAX_PINCH_DISTANCE = 0.25;
 
 // ==========================================
 // Three.js Setup
@@ -178,9 +184,7 @@ hands.onResults((results) => {
         
         // Normalize distance to 0-1 range
         // Typical pinch distance is ~0.05, open hand is ~0.3
-        const minDist = 0.05;
-        const maxDist = 0.25;
-        normalizedDistance = Math.max(0, Math.min(1, (fingerDistance - minDist) / (maxDist - minDist)));
+        normalizedDistance = Math.max(0, Math.min(1, (fingerDistance - MIN_PINCH_DISTANCE) / (MAX_PINCH_DISTANCE - MIN_PINCH_DISTANCE)));
     } else {
         handDetected = false;
         normalizedDistance = 0;
@@ -221,9 +225,9 @@ function animate() {
             const scatterAmount = normalizedDistance * SCATTER_INTENSITY;
             
             // Add noise/scatter based on finger distance
-            const noiseX = (Math.random() - 0.5) * scatterAmount * 0.1;
-            const noiseY = (Math.random() - 0.5) * scatterAmount * 0.1;
-            const noiseZ = (Math.random() - 0.5) * scatterAmount * 0.1;
+            const noiseX = (Math.random() - 0.5) * scatterAmount * NOISE_MULTIPLIER;
+            const noiseY = (Math.random() - 0.5) * scatterAmount * NOISE_MULTIPLIER;
+            const noiseZ = (Math.random() - 0.5) * scatterAmount * NOISE_MULTIPLIER;
             
             // Interpolate towards target with noise
             positions[idx] += (targetPositions[idx] + noiseX - positions[idx]) * INTERPOLATION_SPEED;
@@ -233,9 +237,9 @@ function animate() {
             // When distance is large, add more scatter/explosion effect
             if (normalizedDistance > 0.5) {
                 const explosionFactor = (normalizedDistance - 0.5) * 2;
-                positions[idx] += (Math.random() - 0.5) * explosionFactor * 0.05;
-                positions[idx + 1] += (Math.random() - 0.5) * explosionFactor * 0.05;
-                positions[idx + 2] += (Math.random() - 0.5) * explosionFactor * 0.05;
+                positions[idx] += (Math.random() - 0.5) * explosionFactor * EXPLOSION_MULTIPLIER;
+                positions[idx + 1] += (Math.random() - 0.5) * explosionFactor * EXPLOSION_MULTIPLIER;
+                positions[idx + 2] += (Math.random() - 0.5) * explosionFactor * EXPLOSION_MULTIPLIER;
             }
         } else {
             // No hand detected - smoothly interpolate to target shape
