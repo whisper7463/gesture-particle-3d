@@ -210,16 +210,23 @@ function initMediaPipe() {
     
     hands.onResults(onHandResults);
     
-    // Initialize camera
+    // Initialize camera with error handling
     webcamCamera = new window.Camera(videoElement, {
         onFrame: async () => {
-            await hands.send({ image: videoElement });
+            try {
+                await hands.send({ image: videoElement });
+            } catch (error) {
+                console.error('MediaPipe processing error:', error);
+            }
         },
         width: 640,
         height: 480
     });
     
-    webcamCamera.start();
+    webcamCamera.start().catch((error) => {
+        console.error('Camera initialization failed:', error);
+        console.log('Hand gesture control disabled. Using default spread value.');
+    });
 }
 
 // ============================================
@@ -308,11 +315,30 @@ function drawHandLandmarks(landmarks) {
 // Initialize GUI
 // ============================================
 function initGUI() {
-    // Wait for lil-gui to load
-    const checkGUI = setInterval(() => {
+    // Wait for lil-gui to load using Promise with timeout
+    const waitForGUI = new Promise((resolve, reject) => {
         if (window.GUI) {
-            clearInterval(checkGUI);
-            
+            resolve();
+            return;
+        }
+        
+        const maxAttempts = 50; // 5 seconds timeout
+        let attempts = 0;
+        
+        const checkGUI = setInterval(() => {
+            attempts++;
+            if (window.GUI) {
+                clearInterval(checkGUI);
+                resolve();
+            } else if (attempts >= maxAttempts) {
+                clearInterval(checkGUI);
+                reject(new Error('lil-gui failed to load'));
+            }
+        }, 100);
+    });
+    
+    waitForGUI
+        .then(() => {
             gui = new window.GUI({ title: 'Particle Controls' });
             
             gui.addColor(settings, 'particleColor')
@@ -331,8 +357,10 @@ function initGUI() {
                 .name('Spread')
                 .listen()
                 .disable();
-        }
-    }, 100);
+        })
+        .catch((error) => {
+            console.error('GUI initialization failed:', error);
+        });
 }
 
 // ============================================
