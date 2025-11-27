@@ -1,0 +1,49 @@
+/* Reset and fullscreen setup */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+}
+
+/* Three.js canvas */
+canvas#three-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Hide the actual video element */
+#webcam {
+    display: none;
+}
+
+/* Webcam preview canvas - mirrored and positioned in corner */
+#webcam-canvas {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 240px;
+    height: 180px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    transform: scaleX(-1); /* Mirror the webcam feed */
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Hide scrollbars */
+::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
