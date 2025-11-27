@@ -19,6 +19,14 @@ const RANDOM_OFFSET_STRENGTH = 0.5;
 let handLandmarks = null;
 let interactionFactor = 1.0; // 0 = pinched (tight), 1 = open (scattered)
 
+// Hand rotation tracking
+let targetRotationZ = 0;
+let currentRotationZ = 0;
+let handDetected = false;
+const ROTATION_SMOOTHING_FACTOR = 0.08;
+const ROTATION_DECAY_FACTOR = 0.98;
+const HAND_ROTATION_OFFSET = Math.PI / 2; // Makes vertical hand (fingers up) the neutral position
+
 // GUI parameters
 const params = {
     particleColor: '#00ffff',
@@ -215,6 +223,140 @@ function generateHeartPositions(positions) {
     }
 }
 
+// Generate fireworks positions - particles radiating from center with burst effect
+function generateFireworksPositions(positions) {
+    const numBursts = 5;
+    const particlesPerBurst = Math.floor(PARTICLE_COUNT / numBursts);
+    let index = 0;
+    
+    for (let burst = 0; burst < numBursts; burst++) {
+        // Random center for each burst
+        const centerX = (Math.random() - 0.5) * 2;
+        const centerY = (Math.random() - 0.5) * 2 + 0.5;
+        const centerZ = (Math.random() - 0.5) * 2;
+        
+        const count = (burst === numBursts - 1) ? PARTICLE_COUNT - index : particlesPerBurst;
+        
+        for (let i = 0; i < count && index < PARTICLE_COUNT; i++) {
+            // Random direction for each particle (spherical distribution)
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const radius = 0.5 + Math.random() * 1.5; // Varying distances from center
+            
+            const x = centerX + radius * Math.sin(phi) * Math.cos(theta);
+            const y = centerY + radius * Math.sin(phi) * Math.sin(theta);
+            const z = centerZ + radius * Math.cos(phi);
+            
+            positions[index * 3] = x;
+            positions[index * 3 + 1] = y;
+            positions[index * 3 + 2] = z;
+            index++;
+        }
+    }
+}
+
+// Generate Christmas tree positions - cone shape with spiral and star at top
+function generateChristmasTreePositions(positions) {
+    const treeHeight = 3;
+    const baseRadius = 1.5;
+    const starParticles = Math.floor(PARTICLE_COUNT * 0.05); // 5% for star
+    const trunkParticles = Math.floor(PARTICLE_COUNT * 0.05); // 5% for trunk
+    const treeParticles = PARTICLE_COUNT - starParticles - trunkParticles;
+    let index = 0;
+    
+    // Generate tree body (cone with spiral)
+    for (let i = 0; i < treeParticles && index < PARTICLE_COUNT; i++) {
+        const t = i / treeParticles; // 0 to 1 from bottom to top
+        const y = -treeHeight / 2 + t * treeHeight;
+        const radiusAtHeight = baseRadius * (1 - t * 0.9); // Cone shape
+        
+        // Spiral pattern
+        const spiralAngle = t * Math.PI * 8 + Math.random() * 0.5;
+        const randomRadius = radiusAtHeight * (0.3 + Math.random() * 0.7);
+        
+        const x = randomRadius * Math.cos(spiralAngle);
+        const z = randomRadius * Math.sin(spiralAngle);
+        
+        positions[index * 3] = x;
+        positions[index * 3 + 1] = y;
+        positions[index * 3 + 2] = z;
+        index++;
+    }
+    
+    // Generate star at top
+    const starY = treeHeight / 2 + 0.3;
+    for (let i = 0; i < starParticles && index < PARTICLE_COUNT; i++) {
+        const angle = (i / starParticles) * Math.PI * 2;
+        const starRadius = 0.15 + Math.random() * 0.15;
+        const x = starRadius * Math.cos(angle * 5);
+        const z = starRadius * Math.sin(angle * 5);
+        const yOffset = Math.random() * 0.1 - 0.05;
+        
+        positions[index * 3] = x;
+        positions[index * 3 + 1] = starY + yOffset;
+        positions[index * 3 + 2] = z;
+        index++;
+    }
+    
+    // Generate trunk
+    const trunkRadius = 0.15;
+    const trunkHeight = 0.5;
+    for (let i = 0; i < trunkParticles && index < PARTICLE_COUNT; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const r = Math.random() * trunkRadius;
+        const x = r * Math.cos(angle);
+        const z = r * Math.sin(angle);
+        const y = -treeHeight / 2 - Math.random() * trunkHeight;
+        
+        positions[index * 3] = x;
+        positions[index * 3 + 1] = y;
+        positions[index * 3 + 2] = z;
+        index++;
+    }
+}
+
+// Generate planet positions - central sphere with ring around equator
+function generatePlanetPositions(positions) {
+    const sphereRadius = 1.2;
+    const ringInnerRadius = 1.8;
+    const ringOuterRadius = 2.5;
+    const ringThickness = 0.1;
+    
+    const sphereParticles = Math.floor(PARTICLE_COUNT * 0.6); // 60% for sphere
+    const ringParticles = PARTICLE_COUNT - sphereParticles; // 40% for ring
+    let index = 0;
+    
+    // Generate central sphere (planet body)
+    for (let i = 0; i < sphereParticles && index < PARTICLE_COUNT; i++) {
+        // Use golden ratio spiral for even distribution (avoids clustering at poles)
+        const phi = Math.acos(1 - 2 * (i + 0.5) / sphereParticles);
+        const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5); // Golden ratio: (1 + sqrt(5))
+        
+        const x = sphereRadius * Math.sin(phi) * Math.cos(theta);
+        const y = sphereRadius * Math.sin(phi) * Math.sin(theta);
+        const z = sphereRadius * Math.cos(phi);
+        
+        positions[index * 3] = x;
+        positions[index * 3 + 1] = z; // Y is up
+        positions[index * 3 + 2] = y;
+        index++;
+    }
+    
+    // Generate ring (disk around equator)
+    for (let i = 0; i < ringParticles && index < PARTICLE_COUNT; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = ringInnerRadius + Math.random() * (ringOuterRadius - ringInnerRadius);
+        const x = radius * Math.cos(angle);
+        const z = radius * Math.sin(angle);
+        const y = (Math.random() - 0.5) * ringThickness;
+        
+        positions[index * 3] = x;
+        positions[index * 3 + 1] = y;
+        positions[index * 3 + 2] = z;
+        index++;
+    }
+}
+
 // Switch shape
 function switchShape(shape) {
     if (shape === 'Sphere') {
@@ -223,6 +365,12 @@ function switchShape(shape) {
         generateCubePositions(targetPositions);
     } else if (shape === 'Heart') {
         generateHeartPositions(targetPositions);
+    } else if (shape === 'Fireworks') {
+        generateFireworksPositions(targetPositions);
+    } else if (shape === 'Christmas Tree') {
+        generateChristmasTreePositions(targetPositions);
+    } else if (shape === 'Planet') {
+        generatePlanetPositions(targetPositions);
     }
 }
 
@@ -271,6 +419,7 @@ function initMediaPipe() {
 function onHandResults(results) {
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         handLandmarks = results.multiHandLandmarks[0];
+        handDetected = true;
         
         // Calculate pinch distance (thumb tip to index finger tip)
         const thumbTip = handLandmarks[4];  // Landmark 4: Thumb tip
@@ -285,8 +434,21 @@ function onHandResults(results) {
         // Map distance to interaction factor
         // Pinch threshold: ~0.05 (pinched) to ~0.2 (open)
         interactionFactor = Math.min(1, Math.max(0, (distance - PINCH_MIN_DISTANCE) / (PINCH_MAX_DISTANCE - PINCH_MIN_DISTANCE)));
+        
+        // Calculate hand rotation angle in XY plane
+        // Using wrist (landmark 0) to middle finger MCP (landmark 9)
+        const wrist = handLandmarks[0];
+        const middleMCP = handLandmarks[9];
+        
+        // Calculate angle from wrist to middle finger MCP
+        const handDx = middleMCP.x - wrist.x;
+        const handDy = middleMCP.y - wrist.y;
+        
+        // Calculate angle (atan2 gives angle in radians)
+        targetRotationZ = Math.atan2(handDy, handDx) + HAND_ROTATION_OFFSET;
     } else {
         handLandmarks = null;
+        handDetected = false;
         // Gradually return to default when no hand detected
         interactionFactor = Math.max(0, interactionFactor - INTERACTION_DECAY_RATE);
     }
@@ -306,7 +468,7 @@ function initGUI() {
         });
     
     // Shape switching
-    gui.add(params, 'shape', ['Sphere', 'Cube', 'Heart'])
+    gui.add(params, 'shape', ['Sphere', 'Cube', 'Heart', 'Fireworks', 'Christmas Tree', 'Planet'])
         .name('Shape')
         .onChange((value) => {
             switchShape(value);
@@ -332,8 +494,20 @@ function animate() {
     
     updateParticles();
     
-    // Rotate particle system slowly
-    particleSystem.rotation.y += 0.002;
+    // Handle rotation based on hand detection
+    if (handDetected) {
+        // Smoothly interpolate rotation.z towards hand's target rotation
+        currentRotationZ += (targetRotationZ - currentRotationZ) * ROTATION_SMOOTHING_FACTOR;
+        particleSystem.rotation.z = currentRotationZ;
+        // Keep slight Y rotation for visual interest
+        particleSystem.rotation.y += 0.001;
+    } else {
+        // Auto-rotate when no hand is detected
+        particleSystem.rotation.y += 0.002;
+        // Gradually return Z rotation to neutral
+        currentRotationZ *= ROTATION_DECAY_FACTOR;
+        particleSystem.rotation.z = currentRotationZ;
+    }
     
     renderer.render(scene, camera);
 }
