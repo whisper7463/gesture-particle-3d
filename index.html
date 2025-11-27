@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesture Particle 3D</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Three.js canvas container -->
+    <div id="canvas-container"></div>
+
+    <!-- Webcam video element for MediaPipe -->
+    <video id="webcam" autoplay muted playsinline></video>
+
+    <!-- Gesture status indicator -->
+    <div id="gesture-status">
+        <span id="status-text">Initializing...</span>
+    </div>
+
+    <!-- CDN Scripts -->
+    <!-- Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.min.js"></script>
+
+    <!-- lil-gui -->
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.19.1/dist/lil-gui.umd.min.js"></script>
+
+    <!-- Main application script -->
+    <script src="script.js"></script>
+</body>
+</html>
