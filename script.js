@@ -22,7 +22,7 @@ let interactionFactor = 1.0; // 0 = pinched (tight), 1 = open (scattered)
 // GUI parameters
 const params = {
     particleColor: '#00ffff',
-    shape: 'Sphere',
+    shape: 'Heart',
     particleSize: 3,
     dispersionStrength: 5
 };
@@ -72,8 +72,8 @@ function initParticles() {
     targetPositions = new Float32Array(PARTICLE_COUNT * 3);
     velocities = new Float32Array(PARTICLE_COUNT * 3);
     
-    // Generate initial sphere shape
-    generateSpherePositions(targetPositions);
+    // Generate initial heart shape
+    generateHeartPositions(targetPositions);
     
     // Copy target to current positions initially
     for (let i = 0; i < currentPositions.length; i++) {
@@ -167,12 +167,42 @@ function generateCubePositions(positions) {
     }
 }
 
+// Generate heart positions using parametric equation with 3D thickness
+function generateHeartPositions(positions) {
+    const HEART_SCALE = 0.12;
+    const DEPTH_SCALE = 2;
+    const DEPTH_X_FACTOR = 0.5;
+    
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+        // Use randomized t for more uniform distribution across the heart surface
+        const t = Math.random() * 2 * Math.PI;
+        
+        // 2D heart curve (parametric equation)
+        const x = 16 * Math.pow(Math.sin(t), 3);
+        const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+        
+        // Add depth variation for 3D effect
+        // Use random depth within a circular cross-section
+        const depthRadius = DEPTH_SCALE * (1 - Math.abs(Math.sin(t * 0.5)));
+        const theta = Math.random() * 2 * Math.PI;
+        const r = Math.random() * depthRadius;
+        const z = r * Math.cos(theta);
+        const extraX = r * Math.sin(theta) * DEPTH_X_FACTOR;
+        
+        positions[i * 3] = (x + extraX) * HEART_SCALE;
+        positions[i * 3 + 1] = y * HEART_SCALE;
+        positions[i * 3 + 2] = z * HEART_SCALE;
+    }
+}
+
 // Switch shape
 function switchShape(shape) {
     if (shape === 'Sphere') {
         generateSpherePositions(targetPositions);
     } else if (shape === 'Cube') {
         generateCubePositions(targetPositions);
+    } else if (shape === 'Heart') {
+        generateHeartPositions(targetPositions);
     }
 }
 
@@ -256,7 +286,7 @@ function initGUI() {
         });
     
     // Shape switching
-    gui.add(params, 'shape', ['Sphere', 'Cube'])
+    gui.add(params, 'shape', ['Sphere', 'Cube', 'Heart'])
         .name('Shape')
         .onChange((value) => {
             switchShape(value);
