@@ -1,0 +1,46 @@
+/* Remove default margins/padding for full-screen canvas */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+}
+
+/* Canvas container takes up full viewport */
+#canvas-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+/* WebGL canvas styling */
+#canvas-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Webcam video element - positioned in corner with mirror effect */
+#webcam {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 200px;
+    height: 150px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    transform: scaleX(-1); /* Mirror effect (flip horizontally) */
+    z-index: 100;
+    object-fit: cover;
+}
+
+/* Ensure lil-gui controls are visible */
+.lil-gui {
+    z-index: 200 !important;
+}
