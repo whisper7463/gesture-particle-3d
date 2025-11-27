@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesture Particle 3D</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Webcam video element for MediaPipe -->
+    <video id="webcam" autoplay playsinline></video>
+    
+    <!-- Canvas for webcam preview overlay -->
+    <canvas id="webcam-canvas"></canvas>
+    
+    <!-- Three.js will create its own canvas -->
+    
+    <!-- Import Three.js -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    
+    <!-- MediaPipe libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js" crossorigin="anonymous"></script>
+    
+    <!-- lil-gui -->
+    <script type="module">
+        import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm';
+        window.GUI = GUI;
+    </script>
+    
+    <!-- Main script -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
