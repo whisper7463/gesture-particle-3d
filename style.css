@@ -1,0 +1,121 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* Three.js canvas container - full screen */
+#canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+#canvas-container canvas {
+    display: block;
+}
+
+/* Webcam preview - mirrored in corner */
+#webcam {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 200px;
+    height: 150px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    object-fit: cover;
+    transform: scaleX(-1); /* Mirror the video */
+    z-index: 100;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+#webcam:hover {
+    opacity: 1;
+}
+
+/* Gesture status indicator */
+#gesture-status {
+    position: fixed;
+    bottom: 180px;
+    left: 20px;
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    z-index: 100;
+    min-width: 200px;
+}
+
+#status-text {
+    display: block;
+}
+
+/* lil-gui custom positioning */
+.lil-gui {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    z-index: 200 !important;
+}
+
+/* Loading indicator */
+.loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 18px;
+    z-index: 300;
+}
+
+/* Instructions overlay */
+#instructions {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    max-width: 300px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    line-height: 1.5;
+    z-index: 100;
+}
+
+#instructions h3 {
+    margin-bottom: 8px;
+    color: #fff;
+    font-size: 14px;
+}
+
+#instructions ul {
+    list-style: none;
+    padding: 0;
+}
+
+#instructions li {
+    margin-bottom: 5px;
+}
+
+#instructions strong {
+    color: #4fc3f7;
+}
