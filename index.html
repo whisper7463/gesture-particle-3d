@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Gesture Particle System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Container for the Three.js canvas -->
+    <div id="canvas-container"></div>
+    
+    <!-- Webcam video element (hidden, used by MediaPipe) -->
+    <video id="webcam" autoplay playsinline></video>
+    
+    <!-- Small preview video in bottom-right corner -->
+    <video id="preview-video" autoplay playsinline muted></video>
+    
+    <!-- Loading indicator -->
+    <div id="loading">
+        <p>Initializing camera and hand tracking...</p>
+        <p class="hint">Please allow camera access when prompted.</p>
+    </div>
+
+    <!-- CDN Scripts -->
+    <!-- Note: For production use, add Subresource Integrity (SRI) hashes to these scripts -->
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" crossorigin="anonymous"></script>
+    
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.min.js" crossorigin="anonymous"></script>
+    
+    <!-- MediaPipe Camera Utils -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.min.js" crossorigin="anonymous"></script>
+    
+    <!-- lil-gui for controls -->
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18.2/dist/lil-gui.umd.min.js" crossorigin="anonymous"></script>
+    
+    <!-- Main script -->
+    <script src="script.js"></script>
+</body>
+</html>

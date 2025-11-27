@@ -1,0 +1,101 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* Full-screen canvas container */
+#canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+#canvas-container canvas {
+    display: block;
+}
+
+/* Hidden webcam video (used by MediaPipe) */
+#webcam {
+    display: none;
+}
+
+/* Small mirrored video preview in bottom-right corner */
+#preview-video {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 200px;
+    height: 150px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    object-fit: cover;
+    z-index: 100;
+    transform: scaleX(-1); /* Mirror the video */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    background-color: #222;
+}
+
+/* Loading indicator */
+#loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    color: #fff;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 30px 50px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+#loading p {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+#loading .hint {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+#loading.hidden {
+    display: none;
+}
+
+/* lil-gui custom positioning */
+.lil-gui {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    z-index: 200 !important;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    #preview-video {
+        width: 120px;
+        height: 90px;
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .lil-gui {
+        transform: scale(0.85);
+        transform-origin: top right;
+    }
+}
